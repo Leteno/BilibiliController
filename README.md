@@ -31,7 +31,7 @@ Press Win key
 4. Try in your phone!
 
 * first, your computer ip => `ipconfig`, e.g. 192.168.1.2
-* Phone, visit "http://<your computer ip>:5000", e.g. "http://192.168.1.2:5000"
+* Phone, visit `http://<your computer ip>:5000`, e.g. "http://192.168.1.2:5000"
 
 
 ## Yet Another Bilibili Controller
