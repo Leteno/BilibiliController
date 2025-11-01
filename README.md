@@ -32,3 +32,11 @@ Press Win key
 
 * first, your computer ip => `ipconfig`, e.g. 192.168.1.2
 * Phone, visit "http://<your computer ip>:5000", e.g. "http://192.168.1.2:5000"
+
+
+## Yet Another Bilibili Controller
+
+> 明明有 Bilibili 自己的投屏软件了，为啥要做这个
+
+* 家里电视比较老，不支持 Bilibili 投屏。。。
+* 通道建好了，之后可以自定义功能啦
