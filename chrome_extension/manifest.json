@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Bilibili Controller",
+  "version": "1.0",
+  "description": "Bilibili video controller extension",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.bilibili.com/video/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["<all_urls>"]
+}

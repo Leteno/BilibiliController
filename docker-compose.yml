@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  python_server:
+    build: ./python_server
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000

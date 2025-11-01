@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Go With Browser</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1 class="title">Bilibili 干杯！</h1>
+  <div class="container">
+    <div class="buttons">
+      <button id="prevBtn">Previous</button>
+      <button id="pausePlayBtn">Pause/Play</button>
+      <button id="nextBtn">Next</button>
+    </div>
+    <div class="progress-control">
+      <label for="progressSlider">Progress:</label>
+      <input type="range" id="progressSlider" min="0" max="100" value="100">
+      <span id="progressLabel">100/100</span>
+    </div>
+    <div class="rewind-forward-buttons">
+      <button id="rewindBtn">⏪ -10s</button>
+      <button id="forwardBtn">⏩ +10s</button>
+    </div>
+    <div class="media-settings">
+      <div class="volume-control">
+        <label for="volumeSlider">Volume:</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="100">
+        <span id="volumeLabel">100%</span>
+      </div>
+      <div class="playback-rate-control">
+        <label for="playbackRate">Playback Speed:</label>
+        <select id="playbackRate">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1x</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2x</option>
+        </select>
+      </div>
+    </div>
+    <button id="recordBtn" style="display:none">Record</button>
+    <div id="messageBox" style="display:none"></div>
+  </div>
+  </div>
+  <script src="/static/script.js"></script>
+</body>
+</html>
