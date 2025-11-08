@@ -120,18 +120,20 @@ function onReceiveMessage(line) {
   box.scrollTop = box.scrollHeight; // Auto-scroll to bottom
 }
 
-let mediaRecorder;
-let audioChunks = [];
-var recordBtn = document.getElementById("recordBtn");
-recordBtn.addEventListener("click", async () => {
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    stopRecording();
-    return;
-  }
-  await startRecording();
+async function recordInit() {
+  let mediaRecorder;
+  let audioChunks = [];
+  var recordBtn = document.getElementById("recordBtn");
+  recordBtn.addEventListener("click", async () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      stopRecording();
+      return;
+    }
+    await startRecording();
 
-  recordBtn.innerText = "Stop";
-});
+    recordBtn.innerText = "Stop";
+  });
+}
 
 async function startRecording() {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

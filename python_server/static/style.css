@@ -1,185 +1,126 @@
 body {
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  background-color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  font-family: sans-serif;
   margin: 0;
+  padding: 2rem;              /* more padding around the whole page */
+  background: #f9f9f9;
+  color: #333;
 }
 
 .title {
-  font-size: 32px;
-  color: #ff6699;
-  margin-bottom: 40px;
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 2rem;        /* extra margin below the title */
+  color: #e91e63;
 }
 
-.buttons {
+.player-container {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  gap: 1.5rem;                /* more spacing between sections */
+  max-width: 420px;
+  margin: 0 auto;             /* center horizontally */
+  padding: 1.5rem;            /* inner padding for breathing room */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 button {
-  padding: 12px 24px;
-  font-size: 16px;
+  padding: 1rem 1.2rem;       /* larger touch area */
+  font-size: 1rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-#prevBtn {
-  background-color: #3498db;
-  color: white;
+.primary-btn {
+  background: #ff9800;
+  color: #fff;
+  width: 100%;
+  margin-bottom: 1rem;        /* extra margin below Play button */
 }
 
-#nextBtn {
-  background-color: #2ecc71;
-  color: white;
+.secondary-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;                  /* more spacing between Prev/Next */
 }
 
-#pausePlayBtn {
-  background-color: #e67e22;
-  color: white;
-}
-
-button:hover {
-  opacity: 0.85;
+.secondary-controls button {
+  flex: 1;
+  background: #2196f3;
+  color: #fff;
 }
 
 .progress-control {
-  margin-top: 40px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
-input[type="range"] {
-  width: 300px;
-  margin-left: 10px;
+#progressSlider {
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
-#progressLabel {
-  font-weight: bold;
-  min-width: 60px;
-  text-align: left;
-}
-
-.rewind-forward-buttons {
-  margin-top: 20px;
+.skip-controls {
   display: flex;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.skip-controls button {
+  flex: 1;
+  background: #4caf50;
+  color: #fff;
 }
 
 .media-settings {
-  margin-top: 20px;
-  padding: 10px;
-  border-top: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                  /* more spacing between volume & speed */
 }
 
-.volume-control,
-.playback-rate-control {
-  margin-bottom: 10px;
+.volume-control, .playback-rate-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.volume-control label,
-.playback-rate-control label {
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-#volumeSlider {
-  vertical-align: middle;
-}
-
-#playbackRate {
-  padding: 5px;
-  font-size: 14px;
-}
-
-#recordBtn {
-  margin-top: 20px;
-  background-color: #e74c3c;
-  color: white;
-}
-
-#messageBox {
-  width: 400px;
-  height: 300px;
+select {
+  padding: 0.5rem;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  padding: 10px;
-  overflow-y: auto;
-  font-family: sans-serif;
-  background-color: #f9f9f9;
 }
 
-.message {
-  margin: 5px 0;
-  padding: 4px 8px;
-  background-color: #e1f5fe;
-  border-radius: 4px;
-}
-
+/* Remote D-Pad */
 #remote-container {
-  background: #2b2b2b;
-  padding: 25px;
-  border-radius: 25px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.6);
-  display: inline-block;
-  text-align: center;
+  margin-top: 3rem;           /* extra margin above D-pad */
+  display: flex;
+  justify-content: center;
 }
 
 #dpad {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;                  /* more spacing between rows */
 }
 
 .dpad-row {
   display: flex;
   justify-content: center;
-  margin: 10px 0;
+  gap: 1rem;
 }
 
 .remote-btn {
-  display: flex;              /* enable flexbox */
-  justify-content: center;    /* center horizontally */
-  align-items: center;        /* center vertically */
-  width: 65px;
-  height: 65px;
-  margin: 5px;
-  border-radius: 50%;
-  border: none;
-  font-size: 22px;
-  font-weight: bold;
-  background: #444;
+  padding: 1.2rem;
+  font-size: 1.4rem;
+  background: #607d8b;
   color: #fff;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.remote-btn:hover {
-  background: #666;
-}
-
-.remote-btn:active {
-  transform: scale(0.95);
+  border-radius: 50%;
 }
 
 .btn-enter {
-  background: #0078d7;
-  color: #fff;
-}
-
-#extra-controls {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-}
-
-#extra-controls .remote-btn {
-  width: 80px;
-  height: 40px;
-  border-radius: 10px;
-  font-size: 16px;
+  background: #ff5722;
 }
