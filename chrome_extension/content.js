@@ -309,5 +309,29 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     } else if (command == "ArrowRight") {
       picker.moveNext("right");
     }
+  } else if (msg.type == "bilibili_next") {
+    document.querySelector(".bpx-player-ctrl-btn.bpx-player-ctrl-next").click();
+  } else if (msg.type == "bilibili_previous") {
+    document.querySelector(".bpx-player-ctrl-btn.bpx-player-ctrl-prev").click();
+  } else if (msg.type == "bilibili_fullscreen") {
+    document.querySelector(".bpx-player-ctrl-btn.bpx-player-ctrl-full").click();
+  } else if (msg.type == "bilibili_pause_and_play") {
+    document.querySelector(".bpx-player-ctrl-btn.bpx-player-ctrl-play").click();
+    chrome.runtime.sendMessage({
+      type: "bilibili_playing_status",
+      data: JSON.stringify(getVideoStatus())
+    });
+  } else if (msg.type == "bilibili_seek") {
+    const video = document.querySelector(".bpx-player-video-wrap video");
+    if (!video) return;
+    var seekData = JSON.parse(msg.data);
+    video.currentTime = seekData.time;
+  } else if (msg.type == "bilibili_playing_status_request") {
+    chrome.runtime.sendMessage({
+      type: "bilibili_playing_status",
+      data: JSON.stringify(getVideoStatus())
+    });
+  } else {
+    console.log("Unknown message type in content script:", msg.type);
   }
 });
