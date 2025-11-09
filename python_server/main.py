@@ -1,8 +1,11 @@
+#!/usr/bin/env python
 from aiohttp import web
 import aiohttp
 import aiohttp_jinja2
 import jinja2
 import os
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
@@ -66,12 +69,12 @@ async def worker_handler(request):
 
 if __name__ == '__main__':
     app = web.Application()
-    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader('./templates'))
+    aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(os.path.join(script_dir, 'templates')))
     app.router.add_get('/', index)
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/worker', worker_handler)
     app.router.add_get('/controller', controller_handler)
-    app.router.add_static('/static/', path='./static', name='static')
+    app.router.add_static('/static/', path=os.path.join(script_dir, 'static'), name='static')
 
     port = int(os.environ.get('PORT', 5000))
     web.run_app(app, port=port)
