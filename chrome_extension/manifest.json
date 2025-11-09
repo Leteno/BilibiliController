@@ -9,7 +9,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.bilibili.com/video/*"],
+      "matches": ["*://*.bilibili.com/video/*", "*://*.bilibili.com/bangumi/play/*"],
       "js": ["content.js"]
     }
   ],
