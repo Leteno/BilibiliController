@@ -4,6 +4,7 @@ import aiohttp
 import aiohttp_jinja2
 import jinja2
 import os
+import keyboard
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,6 +38,10 @@ async def controller_handler(request):
             command = msg.data
             print(f"[Controller] Received command: {command}")
             if worker_ws and not worker_ws.closed:
+                if "bilibili_fullscreen" in command:
+                    keyboard.send("f")
+                    print("[Controller] Fullscreen command executed via keyboard.")
+                    break
                 await worker_ws.send_str(command)
             else:
                 await ws.send_str("No worker connected.")

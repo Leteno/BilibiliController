@@ -55,6 +55,14 @@ document.getElementById("forwardBtn").addEventListener("click", () => {
   }
 });
 
+document.getElementById("fullscreenBtn").addEventListener("click", () => {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+      type: "bilibili_fullscreen"
+    }));
+  }
+});
+
 document.getElementById("playbackRate").addEventListener("change", (event) => {
   const rate = parseFloat(event.target.value);
   if (socket && socket.readyState === WebSocket.OPEN) {

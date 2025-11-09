@@ -440,6 +440,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       type: "bilibili_playing_status",
       data: JSON.stringify(getVideoStatus())
     });
+  } else if (msg.type == "bilibili_fullscreen") {
+    document.querySelector(".bpx-player-ctrl-btn.bpx-player-ctrl-full").click();
+    console.log("juzhen fullscreen button clicked");
   } else {
     console.log("Unknown message type in content script:", msg.type);
   }
