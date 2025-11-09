@@ -97,12 +97,28 @@ function performMouseOut(element) {
   element.dispatchEvent(mouseleave);
 }
 
+class Panel {
+  constructor(selector, orientation) {
+    this.selector = selector;
+    this.orientation = orientation;
+    this.directions = { up: null, down: null, left: null, right: null };
+  }
+}
+
+class ElementStackRecord {
+  constructor(element, direction) {
+    this.element = element;
+    this.direction = direction;
+  }
+}
+
 class ElementNavigator {
   constructor() {
-    this._selectors = [];
+    this._panels = [];
     this.selectedElement = null;
     this.highlightBox = this._createHighlightBox();
     this.neighborMap = new Map();
+    this.stackRecord = [];
     this.visible = true;
 
     console.log("ElementNavigator initialized");
@@ -115,15 +131,15 @@ class ElementNavigator {
 
   // --- API methods you can override/inherit ---
 
-  get selectors() {
-    return this._selectors;
+  get panels() {
+    return this._panels;
   }
 
-  set selectors(list) {
+  set panels(list) {
     if (!Array.isArray(list)) {
-      throw new Error("selectors must be an array of strings");
+      throw new Error("panels must be an array of Panel objects");
     }
-    this._selectors = list;
+    this._panels = list;
     this.rebuildNeighborMap();
   }
 
@@ -208,7 +224,7 @@ class ElementNavigator {
   }
 
   _getCandidates() {
-    return this.selectors.flatMap(sel => Array.from(document.querySelectorAll(sel)))
+    return this.panels.map(p => p.selector).flatMap(sel => Array.from(document.querySelectorAll(sel)))
       .filter(el => {
         const r = el.getBoundingClientRect();
         const style = window.getComputedStyle(el);
@@ -262,23 +278,81 @@ class ElementNavigator {
   // simple implementation: linear neighbor map
   rebuildNeighborMap() {
     this.neighborMap.clear();
-    const cands = this._getCandidates();
-    for (var index = 0; index < cands.length; index++) {
-      const el = cands[index];
-      const next = index+1 < cands.length ? cands[index+1] : null;
-      const prev = index-1 >= 0 ? cands[index-1] : null;
-      this.neighborMap.set(el, {
-        left: prev,
-        right: next,
-        up: prev,
-        down: next
-      });
-    }
+  }
+
+  _getPanelElements() {
+    return this.panels.map(p => p.selector).map(sel => Array.from(document.querySelectorAll(sel)).filter(el => {
+      const r = el.getBoundingClientRect();
+      const style = window.getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && style.visibility !== "hidden";
+    }));
   }
 
   _findNextElementO1(current, direction) {
-    const neighbors = this.neighborMap.get(current);
-    return neighbors ? neighbors[direction] : null;
+    // const neighbors = this.neighborMap.get(current);
+    // return neighbors ? neighbors[direction] : null;
+    // 1. find which panel current belongs to
+    // 2. if orientation matches, move within panel
+    //   1. if beyond the boundary, move to next panel in that direction
+    // 3. if orientation does not match, do nothing for now.
+    const panelElements = this._getPanelElements();
+    var index = panelElements.findIndex(group => group.includes(current));
+    if (index === -1) return null;
+    const panelChildren = panelElements[index];
+    if ((direction === "up" || direction === "down") && this.panels[index].orientation === "vertical" ||
+        (direction === "left" || direction === "right") && this.panels[index].orientation === "horizontal") {
+      // move within panel
+      var elemIndex = panelChildren.indexOf(current);
+      if ((direction == "right" || direction == "down")) {
+        if (elemIndex < panelChildren.length - 1) {
+          return panelChildren[elemIndex + 1];
+        }
+      } else if ((direction == "left" || direction == "up")) {
+        if (elemIndex > 0) {
+          return panelChildren[elemIndex - 1];
+        }
+      }
+    }
+    // find from stack record
+    if (this.stackRecord.length > 0) {
+      const lastRecord = this.stackRecord[this.stackRecord.length - 1];
+      if (lastRecord.direction === this._oppositeDirection(direction)) {
+        this.stackRecord.pop();
+        return lastRecord.element;
+      }
+    }
+    if (direction === "right" || direction === "down") {
+      var nextNeighborPanel = this.panels[index].directions[direction];
+      if (nextNeighborPanel) {
+        // bug: possibly chain lookup needed, e.g. A.right -> B.right -> C, when B is empty, A.right should go to C
+        const neighborChildren = panelElements[this.panels.indexOf(nextNeighborPanel)];
+        if (neighborChildren && neighborChildren.length > 0) {
+          this.stackRecord.push(new ElementStackRecord(current, direction));
+          return neighborChildren[0];
+        }
+      }
+    } else if (direction === "left" || direction === "up") {
+      var nextNeighborPanel = this.panels[index].directions[direction];
+      if (nextNeighborPanel) {
+        // bug: possibly chain lookup needed, e.g. A.left -> B.left -> C, when B is empty, A.left should go to C
+        const neighborChildren = panelElements[this.panels.indexOf(nextNeighborPanel)];
+        if (neighborChildren && neighborChildren.length > 0) {
+          this.stackRecord.push(new ElementStackRecord(current, direction));
+          return neighborChildren[neighborChildren.length - 1];
+        }
+      }
+    }
+    return null;
+  }
+
+  _oppositeDirection(direction) {
+    switch (direction) {
+      case "up": return "down";
+      case "down": return "up";
+      case "left": return "right";
+      case "right": return "left";
+    }
+    throw new Error("Invalid direction: " + direction);
   }
 
   _handleKey(e) {
@@ -292,11 +366,19 @@ class ElementNavigator {
   }
 }
 var picker = new ElementNavigator();
-picker.selectors = [
-  "div#biliMainHeader ul.left-entry li.v-popover-wrap a.default-entry span",
-  "div#biliMainHeader ul.right-entry li.v-popover-wrap a.right-entry__outside",
-  "#biliHeaderDynScrollCon div.header-content-panel div.header-dynamic__box--center div.dynamic-info-content div",
-  "div.video-page-card-small a[href^=\"/video\"]:has(.title)"
+var leftHeaders = new Panel("div#biliMainHeader ul.left-entry li.v-popover-wrap a.default-entry span", "horizontal");
+var rightHeaders = new Panel("div#biliMainHeader ul.right-entry li.v-popover-wrap a.right-entry__outside", "horizontal");
+var dynamicContents = new Panel("#biliHeaderDynScrollCon div.header-content-panel div.header-dynamic__box--center div.dynamic-info-content div", "vertical");
+var videoCards = new Panel("div.video-page-card-small a[href^=\"/video\"]:has(.title)", "vertical");
+leftHeaders.directions.right = rightHeaders;
+rightHeaders.directions.left = leftHeaders;
+rightHeaders.directions.down = dynamicContents;
+dynamicContents.directions.up = rightHeaders;
+picker.panels = [
+  leftHeaders,
+  rightHeaders,
+  dynamicContents,
+  videoCards
 ];
 picker.show();
 
