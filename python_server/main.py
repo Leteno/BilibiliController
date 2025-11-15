@@ -3,6 +3,7 @@ from aiohttp import web
 import aiohttp
 import aiohttp_jinja2
 import io
+import json
 import jinja2
 import os
 import keyboard
@@ -23,12 +24,22 @@ async def websocket_handler(request):
 
     return ws
 
-@aiohttp_jinja2.template('index.html')
-async def index(request):
-    return {}
-
 worker_ws = None  # Global reference to the worker WebSocket
 controller_ws_list = []  # Global reference to the controller WebSocket
+
+@aiohttp_jinja2.template('index.html')
+async def index(request):
+    if 'from' in request.rel_url.query and request.rel_url.query['from'] == 'qrcode':
+        print("[Index] Accessed from QR code.")
+        global worker_ws
+        if worker_ws and not worker_ws.closed:
+            command = {
+                "type": "close-popup"
+            }
+            await worker_ws.send_str(json.dumps(command))
+        else:
+            print("[Index] No worker connected to handle QR code request.")
+    return {}
 
 async def controller_handler(request):
     global worker_ws
@@ -77,7 +88,7 @@ async def worker_handler(request):
 
 def get_qrcode(request):
     port = int(os.environ.get('PORT', 5000))
-    url = f"http://{get_local_ip()}:{port}"
+    url = f"http://{get_local_ip()}:{port}/?from=qrcode"
     print(f"Generating QR code for URL: {url}")
     try:
         qr = qrcode.make(url)

@@ -31,6 +31,9 @@ function connectWebSocket() {
           });
         }
         return;
+      } if (data.type == "close-popup") {
+        chrome.runtime.sendMessage(data);
+        return;
       } else {
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
             if (tabs.length == 0) return;
