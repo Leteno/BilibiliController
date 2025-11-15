@@ -30,9 +30,9 @@ Press Win key
 
 4. Try in your phone!
 
-* first, find your computer ip => `ipconfig`, e.g. 192.168.1.2
-* In your Phone, visit `http://<your computer ip>:5000`, e.g. "http://192.168.1.2:5000"
+* 点击插件按钮，拿起微信，即可扫一扫 :D
 
+![微信扫一扫](misc/qrcode.png)
 
 ## Yet Another Bilibili Controller
 
