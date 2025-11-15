@@ -18,6 +18,13 @@ chrome://extesions => "Developer mode" => "Load unpacked" => select the folder o
 docker-compose up --build
 ```
 
+然而，docker 虚拟容器内模拟键盘点击是无效的，所以如果想体验 “全屏” 这类需要模拟键盘点击的功能，建议直接本机环境下:
+```
+cd python_server/
+# pip install -r requirements.txt
+python main.py
+```
+
 3. Firewall, allow port 5000
 
 ```
