@@ -2,9 +2,12 @@
 from aiohttp import web
 import aiohttp
 import aiohttp_jinja2
+import io
 import jinja2
 import os
 import keyboard
+import qrcode
+import socket
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -72,6 +75,27 @@ async def worker_handler(request):
     worker_ws = None
     return ws
 
+def get_qrcode(request):
+    port = int(os.environ.get('PORT', 5000))
+    url = f"http://{get_local_ip()}:{port}"
+    print(f"Generating QR code for URL: {url}")
+    try:
+        qr = qrcode.make(url)
+        out = io.BytesIO()
+        qr.save(out, format="PNG")
+        out.seek(0)
+        return web.Response(body=out.getvalue(), content_type="image/png")
+    except Exception as e:
+        return web.Response(text=f"Error generating QR code: {e}", status=500)
+
+def get_local_ip():
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        try:
+            s.connect(('8.8.8.8', 80))
+            return s.getsockname()[0]
+        except Exception:
+            return '127.0.0.1'
+
 if __name__ == '__main__':
     app = web.Application()
     aiohttp_jinja2.setup(app, loader=jinja2.FileSystemLoader(os.path.join(script_dir, 'templates')))
@@ -79,6 +103,7 @@ if __name__ == '__main__':
     app.router.add_get('/ws', websocket_handler)
     app.router.add_get('/worker', worker_handler)
     app.router.add_get('/controller', controller_handler)
+    app.router.add_get('/qrcode', get_qrcode)
     app.router.add_static('/static/', path=os.path.join(script_dir, 'static'), name='static')
 
     port = int(os.environ.get('PORT', 5000))
